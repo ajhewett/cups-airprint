@@ -5,20 +5,21 @@ services:
     build: .
     restart: always
     network_mode: "host"
+    # listens on port 631
     devices:
       - /dev/bus/usb:/dev/bus/usb
     environment:
       #DEBUG: 1
-      CUPSADMIN: "admin"
-      CUPSPASSWORD: "admin"
+      CUPSADMIN: ${CUPSADMIN}
+      CUPSPASSWORD: ${CUPSPASSWORD}
       CUPSMODE: "dnssd"
     volumes:
-      - "/volume1/onedrive/smarthome/data/cups/services:/services"
-      - "/volume1/onedrive/smarthome/data/cups/config:/config"    
+      - "./services:/services"
+      - "./config:/config"    
       - "/var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket"
       - "/etc/localtime:/etc/localtime:ro"
     dns:
-      - 10.79.10.1
+      - ${DNS}
     env_file:
       - .env
 

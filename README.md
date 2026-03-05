@@ -1,4 +1,5 @@
-# xirixiz/synology_airprint [docker-image](https://hub.docker.com/r/xirixiz/synology_airprint)
+
+Forked from https://github.com/xirixiz/cups-airprint
 
 # Working on Synology DSM 7.x (ARM and AMD64)
 
@@ -38,17 +39,40 @@ This Ubuntu-based Docker image runs a CUPS instance that is meant as an AirPrint
 ### Variables:
 * `CUPSADMIN`: the CUPS admin user you want created - default is `admin` if unspecified
 * `CUPSPASSWORD`: the password for the CUPS admin user - default is `admin` username if unspecified
+* `CUPSMODE`: can be "dnssd" or "cups"
+* `DNS`: the ip address of a DNS server
+* `UID`: user id e.g. $(id -u)
+* `GID`: group ip e.g. $(id -g)
+
 
 ### Ports/Network:
 * **Must be run on host network. This is required to support multicasting which is needed for Airprint.**
 
+### Example docker compose run command:
+```
+docker compose up -d
+```
 
-### Example run env command:
+### Example docker run env command:
 ```
 docker run --name cups --restart unless-stopped  --net host\
   -v <your services dir>:/services \
   -v <your config dir>:/config \
   -e CUPSADMIN="<username>" \
   -e CUPSPASSWORD="<password>" \
-  xirixiz/synology-airprint:latest
+  local/cups-airprint:latest
+```
+
+### Example adding a printer:
+```
+# Install "IPP Everywhere" printer samsung-m283x which has broken AirPrint support and no firmware updates
+sudo lpadmin -p samsung-m283x -E \
+	-v "ipp://samsung-m283x/ipp/print" \
+	-m everywhere \
+	-D "Samsung M283x Series" \
+	-L "Walli's Room" \
+	-o sides-default=two-sided-long-edge \
+	-o media-default=iso_a4_210x297mm \
+	-o cupsIPPSupplies=true \
+	-o printer-is-shared=true
 ```
