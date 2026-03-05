@@ -7,7 +7,7 @@ This Ubuntu-based Docker image runs a CUPS instance that is meant as an AirPrint
 * `Included drivers HP, Samsung, Canon, Xerox, etc.`
 
 ## Easy run command (use username and password: admin/admin):
-```docker run --name cups-airprint --restart unless-stopped --net host local/cups-airprint:latest```
+```docker run --name cups-airprint --restart unless-stopped --net host cups-airprint:latest```
 
 ### Before run docker conteiner on DSM7 Synology run this commands in ssh terminal:
 * `sudo synosystemctl stop cupsd`
@@ -44,9 +44,14 @@ This Ubuntu-based Docker image runs a CUPS instance that is meant as an AirPrint
 * `UID`: user id e.g. $(id -u)
 * `GID`: group ip e.g. $(id -g)
 
-
 ### Ports/Network:
 * **Must be run on host network. This is required to support multicasting which is needed for Airprint.**
+* Exposes port 631
+
+### Build container
+```
+docker compose build
+```
 
 ### Example docker compose run command:
 ```
@@ -60,16 +65,13 @@ docker run --name cups --restart unless-stopped  --net host\
   -v <your config dir>:/config \
   -e CUPSADMIN="<username>" \
   -e CUPSPASSWORD="<password>" \
-  local/cups-airprint:latest
+  cups-airprint:latest
 ```
 
 ### Example adding a printer:
 ```
 # Install "IPP Everywhere" printer samsung-m283x which has broken AirPrint support and no firmware updates
-# exec into container
-docker exec -it cups-airprint sh
-# then
-sudo lpadmin -p samsung-m283x -E \
+docker exec -it cups-airprint /usr/sbin/lpadmin -p samsung-m283x -E \
 	-v "ipp://samsung-m283x/ipp/print" \
 	-m everywhere \
 	-D "Samsung M283x Series" \
